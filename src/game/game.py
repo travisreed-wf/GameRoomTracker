@@ -9,23 +9,6 @@ class Game(polymodel.PolyModel):
     winners = ndb.KeyProperty("User", repeated=True)
 
 
-class PlayerPoolBallsState(ndb.StructuredProperty):
-    player = ndb.KeyProperty("User")
-    balls_remaining = ndb.IntegerProperty()
-
-
 class PointData(ndb.StructuredProperty):
     player = ndb.KeyProperty("User")
     points = ndb.IntegerProperty()
-
-
-class PoolGame(Game):
-    final_state = ndb.StructuredProperty(PlayerPoolBallsState, repeated=True)
-
-
-class CutThroatGame(PoolGame):
-    pass
-
-
-class EightBallGame(PoolGame):
-    pass
