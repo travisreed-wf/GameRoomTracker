@@ -1,0 +1,8 @@
+Flask-DebugToolbar==0.9.0
+flask==0.10.1
+Jinja2==2.7.3
+mock==1.0.1
+pep8==1.6.2
+pytz==2015.4
+requests==2.3.0
+setuptools==18.1
