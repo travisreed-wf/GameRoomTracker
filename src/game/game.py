@@ -10,6 +10,13 @@ class Game(polymodel.PolyModel):
         kind="GamePlayerRecord", repeated=True)
     winner_keys = ndb.KeyProperty(kind="User", repeated=True)
 
+    @property
+    def player_records(self):
+        if hasattr(self, "_player_records"):
+            return self._player_records
+        self._player_records = ndb.get_multi(self.player_record_keys)
+        return self._player_records
+
     @classmethod
     def add(cls, player_records):
         """
@@ -19,12 +26,12 @@ class Game(polymodel.PolyModel):
         """
         game = cls(player_record_keys=[r.key for r in player_records])
         game.calculate_experience()
-        game.calculate_rank_points_changes()
+        game.calculate_rating_change()
         game.players = [s.player for s in player_records]
         game.put()
         return game  #  TODO: Calculate winner
 
-    def calculate_rank_points_changes(self):
+    def calculate_rating_change(self):
         """
         Calculate points using self.player_records
         Should be overwritten by subclass
@@ -44,11 +51,13 @@ class Game(polymodel.PolyModel):
         for team in rated_rating_groups:
             for rating in team.itervalues():
                 record = sorted_player_records[record_index]
-                record_index += 1
                 player = record.player
+
                 points_earned = rating.mu - player.rank_data.points
                 record.rank_points_earned = points_earned
-                player.rank_data.points = rating.mu
-                player.rank_data.elasticity = rating.sigma
+                player.update_rating(rating)
                 to_put.append(player)
+
+                record_index += 1
+
         ndb.put_multi(to_put)

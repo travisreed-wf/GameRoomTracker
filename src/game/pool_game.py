@@ -1,4 +1,3 @@
-from google.appengine.ext import ndb
 from trueskill import TrueSkill
 
 from src.config import DEFAULT_RANK_ELASTICITY, DEFAULT_RANK_POINTS
@@ -11,15 +10,16 @@ class PoolGame(Game):
 
 class CutThroatGame(PoolGame):
 
-    def calculate_rank_points_changes(self):
+    def calculate_rating_change(self):
         """
         Calculate Points using the following formula
         A win is worth 5 points, second place is worth 2 points
         """
-        player_records = ndb.get_multi(self.player_record_keys)
         player_records = sorted(
-            player_records, key=lambda r: r.player_placement)
-        teams = [{r.player.name: r.player.rating} for r in player_records]
+            self.player_records, key=lambda r: r.player_placement)
+        teams = [
+            {r.player.name: r.player.trueskill_rating} for r in player_records
+        ]
 
         ranks = [r.player_placement for r in player_records]
 
@@ -32,21 +32,20 @@ class CutThroatGame(PoolGame):
 
 class EightBallGame(PoolGame):
 
-    def calculate_rank_points_changes(self):
+    def calculate_rating_change(self):
         """
         Calculate Points using the following formula
         A win is worth 3 points
         """
-        player_records = ndb.get_multi(self.player_record_keys)
-        team1 = [r for r in player_records if r.player_placement == 1]
-        team2 = [r for r in player_records if r.player_placement == 2]
+        team1 = [r for r in self.player_records if r.player_placement == 1]
+        team2 = [r for r in self.player_records if r.player_placement == 2]
         player_records = sorted(
-            player_records, key=lambda r: r.player_placement)
+            self.player_records, key=lambda r: r.player_placement)
         teams = []
         for team_records in [team1, team2]:
             team = {}
             for record in team_records:
-                team[record.player.name] = record.player.rating
+                team[record.player.name] = record.player.trueskill_rating
             teams.append(team)
 
         ranks = [0, 1]

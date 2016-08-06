@@ -17,40 +17,40 @@ class User(ndb.Model):
     email = ndb.StringProperty(required=True)
     experience = ndb.IntegerProperty(default=0)
     name = ndb.StringProperty(required=True)
-    rank_data = ndb.StructuredProperty(Rating)
+    rating = ndb.StructuredProperty(Rating)
 
     @property
     def is_admin(self):
         return User.current_user_is_admin()
 
     @property
-    def games_played(self):
+    def games_played_count(self):
         # Query game.players
-        return []
+        return 0
 
     @property
-    def games_won(self):
+    def games_won_count(self):
         # Query Game.winners
-        return []
+        return 0
 
     @property
     def level(self):
         return 1
 
     @property
-    def rating(self):
-        if not self.rank_data:
-            self.rank_data = Rating()
+    def trueskill_rating(self):
+        if not self.rating:
+            self.rating = Rating()
             self.put()
         return trueskill.Rating(
-            mu=self.rank_data.points, sigma=self.rank_data.elasticity)
+            mu=self.rating.points, sigma=self.rating.elasticity)
 
     @property
     def win_percentage(self):
         # self.games_won / self.games_played
-        games_played = self.games_played
-        if games_played:
-            return len(self.games_won) / len(self.games_played)
+        games_played_count = self.games_played_count
+        if games_played_count:
+            return self.games_won_count / games_played_count
         else:
             return 0
 
@@ -102,3 +102,7 @@ class User(ndb.Model):
             'name': self.name,
         }
         flask.session['user'] = user_data
+
+    def update_rating(self, trueskill_rating):
+        self.rating.points = trueskill_rating.mu
+        self.rating.elasticity = trueskill_rating.sigma
