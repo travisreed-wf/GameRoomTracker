@@ -1,11 +1,11 @@
 import flask
 from google.appengine.api import users
 from google.appengine.ext import ndb
-from trueskill import Rating
+import trueskill
 
 from src.config import DEFAULT_RANK_ELASTICITY, DEFAULT_RANK_POINTS
 
-class Rank(ndb.StructuredProperty):
+class Rating(ndb.Model):
     elasticity = ndb.FloatProperty(default=DEFAULT_RANK_ELASTICITY)
     points = ndb.IntegerProperty(default=DEFAULT_RANK_POINTS)
 
@@ -17,7 +17,7 @@ class User(ndb.Model):
     email = ndb.StringProperty(required=True)
     experience = ndb.IntegerProperty(default=0)
     name = ndb.StringProperty(required=True)
-    rank_data = ndb.StructuredProperty(Rank)
+    rank_data = ndb.StructuredProperty(Rating)
 
     @property
     def is_admin(self):
@@ -26,12 +26,12 @@ class User(ndb.Model):
     @property
     def games_played(self):
         # Query game.players
-        return 0
+        return []
 
     @property
     def games_won(self):
         # Query Game.winners
-        return None
+        return []
 
     @property
     def level(self):
@@ -39,15 +39,18 @@ class User(ndb.Model):
 
     @property
     def rating(self):
-        return Rating(mu=self.rank_data.points,
-                      sigma=self.rank_data.elasticity)
+        if not self.rank_data:
+            self.rank_data = Rating()
+            self.put()
+        return trueskill.Rating(
+            mu=self.rank_data.points, sigma=self.rank_data.elasticity)
 
     @property
     def win_percentage(self):
         # self.games_won / self.games_played
         games_played = self.games_played
         if games_played:
-            return self.games_won / self.games_played
+            return len(self.games_won) / len(self.games_played)
         else:
             return 0
 

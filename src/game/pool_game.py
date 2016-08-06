@@ -1,5 +1,5 @@
 from google.appengine.ext import ndb
-from trueskill import Rating, TrueSkill
+from trueskill import TrueSkill
 
 from src.config import DEFAULT_RANK_ELASTICITY, DEFAULT_RANK_POINTS
 from src.game.game import Game
