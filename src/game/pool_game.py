@@ -10,21 +10,21 @@ class PoolGame(Game):
         :param player_records a list of PoolPlayerRecords
         :returns: a game object
         """
-        game = cls()
-        game.calculate_experience()
-        game.calculate_ranked_points_changes()
+        game = cls(player_records=[r.key for r in player_records])
+        game.calculate_experience(player_records)
+        game.calculate_rank_points_changes(player_records)
         game.players = [s.player for s in player_records]
         game.put()
         return game  #  TODO: Calculate winner
 
-    def calculate_ranked_points_changes(self):
+    def calculate_rank_points_changes(self, player_records):
         """
         Calculate points using self.player_records
         Should be overwritten by subclass
         """
         pass
 
-    def calculate_experience(self):
+    def calculate_experience(self, player_records):
         """
         Use self.player_records to assign experience to the relevant players
         """
@@ -34,7 +34,7 @@ class PoolGame(Game):
 
 class CutThroatGame(PoolGame):
 
-    def calculate_ranked_points_changes(self):
+    def calculate_rank_points_changes(self, player_records):
         """
         Calculate Points using the following formula
         A win is worth 5 points, second place is worth 2 points
@@ -44,7 +44,7 @@ class CutThroatGame(PoolGame):
 
 class EightBallGame(PoolGame):
 
-    def calculate_ranked_points_changes(self):
+    def calculate_rank_points_changes(self, player_records):
         """
         Calculate Points using the following formula
         A win is worth 3 points

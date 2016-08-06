@@ -6,6 +6,6 @@ class Game(polymodel.PolyModel):
     """Represents a single instance of a Game"""
     date = ndb.DateTimeProperty(auto_now_add=True)
     player_keys = ndb.KeyProperty(kind="User", repeated=True)
-    player_records = ndb.StructuredProperty(
+    player_record_keys = ndb.KeyProperty(
         kind="GamePlayerRecord", repeated=True)
     winner_keys = ndb.KeyProperty(king="User", repeated=True)
