@@ -40,10 +40,7 @@ class GameAPI(MethodView):
             name = player.pop('name')
             player_key = User.query(User.name == name).get(keys_only=True)
             player['player_key'] = player_key
-            record = PoolPlayerRecord()
-            for k, v in player.iteritems():
-                if hasattr(record, k):
-                    setattr(record, k, v)
+            record = PoolPlayerRecord(**player)
             records.append(record)
         ndb.put_multi(records)
         return records
