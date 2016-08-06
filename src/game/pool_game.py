@@ -1,4 +1,7 @@
+from src.config import DEFAULT_RANK_ELASTICITY, DEFAULT_RANK_POINTS
 from src.game.game import Game
+
+from trueskill import Rating, TrueSkill
 
 class PoolGame(Game):
     """Represents a game of Pool"""
@@ -22,7 +25,16 @@ class PoolGame(Game):
         Calculate points using self.player_records
         Should be overwritten by subclass
         """
-        pass
+        player_records = sorted(
+            player_records, key=lambda r: r.player_placement)
+        rating_groups = [{p: p.player.rating_data} for p in player_records]
+
+        ranks = [r.player_placement for r in player_records]
+
+        env = TrueSkill(mu=DEFAULT_RANK_POINTS, sigma=DEFAULT_RANK_ELASTICITY,
+                draw_probability=0.0)
+        rated_rating_groups = env.rate(rating_groups, ranks=ranks)
+
 
     def calculate_experience(self, player_records):
         """

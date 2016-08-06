@@ -2,6 +2,11 @@ import flask
 from google.appengine.api import users
 from google.appengine.ext import ndb
 
+from src.config import DEFAULT_RANK_ELASTICITY, DEFAULT_RANK_POINTS
+
+class Rank(ndb.StructuredProperty):
+    rank_elasticity = ndb.FloatProperty(default=DEFAULT_RANK_ELASTICITY)
+    rank_points = ndb.IntegerProperty(default=DEFAULT_RANK_POINTS)
 
 class User(ndb.Model):
     """
@@ -11,8 +16,7 @@ class User(ndb.Model):
     email = ndb.StringProperty(required=True)
     experience = ndb.IntegerProperty(default=0)
     name = ndb.StringProperty(required=True)
-    total_points = ndb.ComputedProperty(
-        lambda self: self._compute_total_points())
+    rank_data = ndb.StructuredProperty(Rank)
 
     @property
     def is_admin(self):
@@ -89,7 +93,3 @@ class User(ndb.Model):
             'name': self.name,
         }
         flask.session['user'] = user_data
-
-    def _compute_total_points(self):
-        # TODO
-        pass

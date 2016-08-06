@@ -9,6 +9,10 @@ class GamePlayerRecord(polymodel.PolyModel):
                                            choices=[1, 2, 3, 4, 5])
     rank_points_earned = ndb.IntegerProperty()
 
+    @property
+    def player(self):
+        return self.player_key.get()
+
 class PoolPlayerRecord(GamePlayerRecord):
     """Represents a single players part of the final game state"""
     balls_hit_in = ndb.IntegerProperty()
