@@ -10,6 +10,6 @@ $(document).ready(function() {
     var gameType = select.val();
     game = new Game(gameType, $('#game'));
     game.showOptions();
-    game.prepareForSubmission();
+    game.setUpSubmissonHandler();
   });
 });

@@ -8,7 +8,7 @@ Game.prototype = {
   constructor: Game,
 
   addPlayer: function(playerName) {
-    this.player.push(playerName);
+    this.players.push(playerName);
   },
   getOptionsHTML: function() {
     var html =
@@ -32,10 +32,19 @@ Game.prototype = {
       '</div>';
     return $(html);
   },
-  prepareForSubmission: function() {
+  handleSubmission: function() {
+    // TODO check that there is at least two
+    var playerNames = $('#select-players').val();
+    for (var i = 0; i < playerNames.length; i++) {
+      var player = new Player(playerNames[i]);
+      this.addPlayer(player);
+    }
+    this.showNextPlayerPage();
+  },
+  setUpSubmissonHandler: function() {
+    var _this = this;
     $('#submit-game').click(function() {
-      // TODO show page for player data
-      console.log('Game submitted');
+      _this.handleSubmission();
     });
   },
   setUpPlayerSelect: function() {
@@ -46,7 +55,13 @@ Game.prototype = {
   },
   showOptions: function() {
     var html = this.getOptionsHTML();
-    this.div.html(html);
+    this.div.find('#options').html(html);
     this.setUpPlayerSelect();
+  },
+  showNextPlayerPage: function() {
+    var player = this.players.shift();
+    var html = player.getHTML();
+    this.div.html(html);
+    player.setUpSubmissonHandler();
   }
 };
