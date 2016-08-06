@@ -9,8 +9,8 @@ class User(ndb.Model):
     ID will equal the username that they originally used for sign in
     """
     email = ndb.StringProperty(required=True)
-    experience = ndb.IntegerProperty()
-    name = ndb.StringProperty()
+    experience = ndb.IntegerProperty(default=0)
+    name = ndb.StringProperty(required=True)
     total_points = ndb.ComputedProperty(
         lambda self: self._compute_total_points())
 
