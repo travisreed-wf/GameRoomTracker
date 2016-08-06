@@ -2,16 +2,110 @@
 {% block header_css %}
   <head>
       <title>Game Room Tracker</title>
+      <link href="/static/select2-4.0.3/select2.min.css" rel="stylesheet" />
   </head>
   {{ super() }}
 {% endblock %}
 {% block body %}
   <div class="row">
     <div class="col-md-12 col-sm-12">
-      <h4>Game Room Tracker</h4>
+      <h3>Game Room Tracker</h3>
+    </div>
+  </div>
+  <hr />
+  <div class="row">
+    <div class="col-md-12 col-sm-12">
+      <h4>Create a new game</h4>
+    </div>
+  </div>
+  <div class="row">
+    <div class='col-md-4 col-sm-4'>
+      <select class="form-control" id="game-select">
+        <option></option>
+        <option>
+          Pool - Cut throat
+        </option>
+        <option>
+          Pool - Eight ball
+        </option>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <div id='game' class='col-md-4 col-sm-4'>
     </div>
   </div>
 {% endblock body %}
 {% block js_bottom %}
   {{ super() }}
+  <script src="/static/select2-4.0.3/select2.min.js"></script>
+
+  <script type='text/javascript'>
+    var game = null;
+    var gameSelectDiv = $('#game-select');
+    gameSelectDiv.select2({
+      placeholder: 'Select a game'
+    });
+
+    $('#game-select').on('change', function() {
+      var select = $(this);
+      var gameType = select.val();
+      game = new Game(gameType, $('#game'));
+      game.showOptions();
+      game.prepareForSubmission();
+    });
+
+    function Game(gameType, gameDiv) {
+      this.div = gameDiv;
+      this.gameType = gameType
+      this.players = [];
+    }
+
+    Game.prototype = {
+      constructor: Game,
+
+      addPlayer: function(playerName) {
+        this.player.push(playerName);
+      },
+      getOptionsHTML: function() {
+        var html =
+          '<hr />' +
+          '<h4>Set options</h4>' +
+          '<div class="checkbox">' +
+            '<label>' +
+              '<input id="ranked-checkbox" type="checkbox" checked/> Ranked Game' +
+            '</label>' +
+          '</div>' +
+          '<select id="select-players" multiple="multiple">' +
+            '<option></option>' +
+            '<option>Dave Eickelberg</option>' +
+            '<option>Jeremy Curtiss</option>' +
+            '<option>Joe McGovern</option>' +
+            '<option>Luke Van Gorp</option>' +
+            '<option>Travis Reed</option>' +
+          '</select>' +
+          '<div style="margin-top:1em">' +
+            '<button id="submit-game" class="btn btn-primary" type="button">Add game</button>' +
+          '</div>';
+        return $(html);
+      },
+      prepareForSubmission: function() {
+        $('#submit-game').click(function() {
+          // TODO show page for player data
+          console.log('Game submitted')
+        });
+      },
+      setUpPlayerSelect: function() {
+        $('#select-players').select2({
+          placeholder: 'Select players',
+          width: '100%'
+        });
+      },
+      showOptions: function() {
+        var html = this.getOptionsHTML();
+        this.div.html(html);
+        this.setUpPlayerSelect();
+      }
+    }
+  </script>
 {% endblock js_bottom %}
