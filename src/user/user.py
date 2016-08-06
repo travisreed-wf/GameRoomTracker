@@ -7,7 +7,7 @@ from src.config import DEFAULT_RANK_ELASTICITY, DEFAULT_RANK_POINTS
 
 class Rating(ndb.Model):
     elasticity = ndb.FloatProperty(default=DEFAULT_RANK_ELASTICITY)
-    points = ndb.IntegerProperty(default=DEFAULT_RANK_POINTS)
+    points = ndb.FloatProperty(default=DEFAULT_RANK_POINTS)
 
 class User(ndb.Model):
     """
