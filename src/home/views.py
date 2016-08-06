@@ -7,6 +7,6 @@ class HomeView(MethodView):
     def get(self):
         return render_template('home.html')
 
+
 def setup_urls(app):
     app.add_url_rule('/', view_func=HomeView.as_view('home'))
-
