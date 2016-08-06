@@ -1,4 +1,6 @@
 game = null;
+USERNAMES = [];
+fetchUsernames();
 $(document).ready(function() {
   var gameSelectDiv = $('#game-select');
   gameSelectDiv.select2({
@@ -13,3 +15,18 @@ $(document).ready(function() {
     game.setUpSubmissonHandler();
   });
 });
+
+
+function fetchUsernames() {
+  $.ajax({
+    url: '/api/user/usernames/',
+    method: 'GET',
+    success: function(data) {
+      USERNAMES = JSON.parse(data);
+    },
+    error: function() {
+      // TODO feedback
+      console.error('Bad request');
+    }
+  });
+}

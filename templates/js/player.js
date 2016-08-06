@@ -36,29 +36,29 @@ Player.prototype = {
 
   getInputData: function() {
     return {
-      balls_hit_in: $('#num-hit-in').val(),
-      balls_remaining: $('#num-left').val(),
-      lag_rank: $('#lag-rank').val(),
-      player_placement: $('#placement').val(),
-      scratch_count: $('#num-scratches').val(),
+      balls_hit_in: this.parseNumber($('#num-hit-in').val()),
+      balls_remaining: this.parseNumber($('#num-left').val()),
+      lag_rank: this.parseNumber($('#lag-rank').val()) || 1,
+      player_placement: this.parseNumber($('#placement').val()) || 1,
+      scratch_count: this.parseNumber($('#num-scratches').val()),
     };
   },
 
-  handleSubmission: function() {
-    console.log('Validate data');
+  buildRequestData: function() {
     var inputData = this.getInputData();
     if (this.isValidData(inputData)) {
-      console.log('Send data');
+      inputData.name = this.name;
+      return inputData;
     }
     else {
-      console.log('Show error');
+      return null;
     }
   },
 
   isValidData: function(inputData) {
     for (var playerAttribute in inputData) {
       if (inputData.hasOwnProperty(playerAttribute)) {
-        var number = this.parseNumber(inputData[playerAttribute]);
+        var number = inputData[playerAttribute];
         if (number < 0) {
           return false;
         }
@@ -76,11 +76,4 @@ Player.prototype = {
     }
     return number;
   },
-
-  setUpSubmissonHandler: function() {
-    var _this = this;
-    $('#player-submit').click(function() {
-      _this.handleSubmission();
-    });
-  }
 };
