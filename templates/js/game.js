@@ -56,7 +56,7 @@ Game.prototype = {
     return html;
   },
   handleSubmission: function() {
-    // TODO check that there is at least two
+    // TODO check that there is at least two users for this game
     this.isRanked = $('#ranked-checkbox').is(':checked');
     var playerNames = $('#select-players').val();
     for (var i = 0; i < playerNames.length; i++) {
