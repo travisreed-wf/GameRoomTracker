@@ -37,11 +37,9 @@ class GameAPI(MethodView):
     def _create_records(players):
         records = []
         for player in players:
-            print player
             name = player.pop('name')
             player_key = User.query(User.name == name).get(keys_only=True)
             player['player_key'] = player_key
-            print player
             record = PoolPlayerRecord()
             for k, v in player.iteritems():
                 if hasattr(record, k):
@@ -63,6 +61,8 @@ class GameAPI(MethodView):
 
         if not isinstance(players, list):
             return False
+
+        return True
 
 
 def setup_urls(app):
