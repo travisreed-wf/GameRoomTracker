@@ -1,6 +1,6 @@
-function Game(gameType, gameDiv) {
+function Game(gameDiv) {
   this.div = gameDiv;
-  this.gameType = gameType;
+  this.gameType = null;
   this.players = [];
   this.playerIndex = 0;
   this.isRanked = null;
@@ -28,6 +28,39 @@ Game.prototype = {
   },
   addPlayer: function(playerName) {
     this.players.push(playerName);
+  },
+  createInitialView: function() {
+    this.div.html(this.getInitialViewHTML());
+    var gameSelectDiv = $('#game-select');
+    gameSelectDiv.select2({
+      placeholder: 'Select a game'
+    });
+    this.listenForGameTypeSelection();
+  },
+  getInitialViewHTML: function() {
+    var html =
+    '<div class="row">' +
+      '<div class="col-md-12 col-sm-12">' +
+        '<h4>Create a new game</h4>' +
+      '</div>' +
+    '</div>' +
+    '<div class="row">' +
+      '<div class="col-md-4 col-sm-4">' +
+        '<select class="form-control" id="game-select">' +
+          '<option></option>' +
+          '<option>' +
+            'Pool - Cut throat' +
+          '</option>' +
+          '<option>' +
+            'Pool - Eight ball' +
+          '</option>' +
+        '</select>' +
+      '</div>' +
+    '</div>' +
+    '<div class="row">' +
+      '<div id="options" class="col-md-4 col-sm-4"></div>' +
+    '</div>';
+    return html;
   },
   getOptionsHTML: function() {
     var html =
@@ -64,6 +97,14 @@ Game.prototype = {
       this.addPlayer(player);
     }
     this.showNextPlayerPage();
+  },
+  listenForGameTypeSelection: function() {
+    var _this = this;
+    $('#game-select').on('change', function() {
+      var select = $(this);
+      var gameType = select.val();
+      _this.updateGameType(gameType);
+    });
   },
   listenForSubmission: function(player) {
     var _this = this;
@@ -124,5 +165,10 @@ Game.prototype = {
       '<h4>Congratulations! You\'re game was succesfully submitted!</h4>' +
       '<a href="/"><button class="btn btn-primary">Add Another Game</button></a>'
     );
+  },
+  updateGameType: function(gameType) {
+    game.gameType = gameType;
+    game.showOptions();
+    game.setUpSubmissonHandler();
   }
 };
