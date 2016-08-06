@@ -11,13 +11,34 @@ class User(ndb.Model):
     display_name = ndb.StringProperty()
     email = ndb.StringProperty(required=True)
     experience = ndb.IntegerProperty()
-    games = ndb.KeyProperty(kind="Game", repeated=True)
     total_points = ndb.IntegerProperty()
-    username = ndb.StringProperty(required=True)
 
     @property
     def is_admin(self):
         return User.current_user_is_admin()
+
+    @property
+    def games_played(self):
+        # Query game.players
+        return 0
+
+    @property
+    def games_won(self):
+        # Query Game.winners
+        return 0
+
+    @property
+    def level(self):
+        return 1
+
+    @property
+    def win_percentage(self):
+        # self.games_won / self.games_played
+        games_played = self.games_played
+        if games_played:
+            return self.games_won / self.games_played
+        else:
+            return 0
 
     @staticmethod
     def add_or_get(email):
@@ -36,8 +57,7 @@ class User(ndb.Model):
             return user
         username = email.split('@')[0]
         display_name = username.replace('.', ' ').title()
-        user = User(id=username, email=email, username=username,
-                    display_name=display_name)
+        user = User(id=username, email=email, display_name=display_name)
         user.put()
         return user
 
@@ -53,13 +73,6 @@ class User(ndb.Model):
         return users.is_current_user_admin()
 
     @staticmethod
-    def get_current_username(default=None):
-        default = default or 'unknown'
-        current_user = User.current_user()
-        username = current_user.username if current_user else default
-        return username
-
-    @staticmethod
     def get_current_user_from_request(request):
         user = User.current_user()
 
@@ -73,6 +86,5 @@ class User(ndb.Model):
             'display_name': self.display_name,
             'email': self.email,
             'is_admin': self.is_admin,
-            'username': self.username
         }
         flask.session['user'] = user_data
