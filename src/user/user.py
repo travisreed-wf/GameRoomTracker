@@ -8,10 +8,11 @@ class User(ndb.Model):
     Represents a user (player or observer) of the GameRoomTracker
     ID will equal the username that they originally used for sign in
     """
-    display_name = ndb.StringProperty()
     email = ndb.StringProperty(required=True)
     experience = ndb.IntegerProperty()
-    total_points = ndb.IntegerProperty()
+    name = ndb.StringProperty()
+    total_points = ndb.ComputedProperty(
+        lambda self: self._compute_total_points())
 
     @property
     def is_admin(self):
@@ -25,7 +26,7 @@ class User(ndb.Model):
     @property
     def games_won(self):
         # Query Game.winners
-        return 0
+        return None
 
     @property
     def level(self):
@@ -56,8 +57,8 @@ class User(ndb.Model):
         if user:
             return user
         username = email.split('@')[0]
-        display_name = username.replace('.', ' ').title()
-        user = User(id=username, email=email, display_name=display_name)
+        name = username.replace('.', ' ').title()
+        user = User(id=username, email=email, name=name)
         user.put()
         return user
 
@@ -83,8 +84,12 @@ class User(ndb.Model):
 
     def add_to_session(self):
         user_data = {
-            'display_name': self.display_name,
             'email': self.email,
             'is_admin': self.is_admin,
+            'name': self.name,
         }
         flask.session['user'] = user_data
+
+    def _compute_total_points(self):
+        # TODO
+        pass
