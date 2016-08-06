@@ -9,7 +9,7 @@ class Usernames(MethodView):
     def get(self):
         users = User.query().fetch()
         names = [u.name for u in users]
-        return json.dumps(names)
+        return json.dumps(names), 200
 
 
 def setup_urls(app):
