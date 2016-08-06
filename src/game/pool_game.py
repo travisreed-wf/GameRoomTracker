@@ -1,7 +1,9 @@
+from google.appengine.ext import ndb
+from trueskill import Rating, TrueSkill
+
 from src.config import DEFAULT_RANK_ELASTICITY, DEFAULT_RANK_POINTS
 from src.game.game import Game
 
-from trueskill import Rating, TrueSkill
 
 class PoolGame(Game):
     """Represents a game of Pool"""
@@ -27,14 +29,26 @@ class PoolGame(Game):
         """
         player_records = sorted(
             player_records, key=lambda r: r.player_placement)
-        rating_groups = [{p: p.player.rating_data} for p in player_records]
+        teams = [{r: r.player.rating} for r in player_records]
 
         ranks = [r.player_placement for r in player_records]
 
-        env = TrueSkill(mu=DEFAULT_RANK_POINTS, sigma=DEFAULT_RANK_ELASTICITY,
-                draw_probability=0.0)
-        rated_rating_groups = env.rate(rating_groups, ranks=ranks)
+        env = TrueSkill(
+            mu=DEFAULT_RANK_POINTS, sigma=DEFAULT_RANK_ELASTICITY,
+            draw_probability=0.0)
 
+        to_put = []
+        rated_rating_groups = env.rate(teams, ranks=ranks)
+        for team in rated_rating_groups:
+            for record, rating in team.iteritems():
+                player = record.player
+                points_earned = rating.mu - player.rank_data.points
+                record.rank_points_earned = points_earned
+                player.rank_data.points = rating.mu
+                player.rank_data.elasticity = rating.sigma
+                to_put.append(player)
+
+        ndb.put_multi(to_put)
 
     def calculate_experience(self, player_records):
         """

@@ -1,12 +1,13 @@
 import flask
 from google.appengine.api import users
 from google.appengine.ext import ndb
+from trueskill import Rating
 
 from src.config import DEFAULT_RANK_ELASTICITY, DEFAULT_RANK_POINTS
 
 class Rank(ndb.StructuredProperty):
-    rank_elasticity = ndb.FloatProperty(default=DEFAULT_RANK_ELASTICITY)
-    rank_points = ndb.IntegerProperty(default=DEFAULT_RANK_POINTS)
+    elasticity = ndb.FloatProperty(default=DEFAULT_RANK_ELASTICITY)
+    points = ndb.IntegerProperty(default=DEFAULT_RANK_POINTS)
 
 class User(ndb.Model):
     """
@@ -35,6 +36,11 @@ class User(ndb.Model):
     @property
     def level(self):
         return 1
+
+    @property
+    def rating(self):
+        return Rating(mu=self.rank_data.points,
+                      sigma=self.rank_data.elasticity)
 
     @property
     def win_percentage(self):

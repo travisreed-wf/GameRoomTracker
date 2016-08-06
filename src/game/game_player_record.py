@@ -11,7 +11,10 @@ class GamePlayerRecord(polymodel.PolyModel):
 
     @property
     def player(self):
-        return self.player_key.get()
+        if hasattr(self, "_player"):
+            return self._player
+        self._player = self.player_key.get()
+        return self._player
 
 class PoolPlayerRecord(GamePlayerRecord):
     """Represents a single players part of the final game state"""
