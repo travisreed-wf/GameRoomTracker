@@ -101,6 +101,7 @@ Player.prototype = {
     if (value === null || value === "") {
       return false;
     }
+    value = parseInt(value);
     if (value < 0) {
       return false;
     }
