@@ -1,3 +1,7 @@
+/*
+Taken from w-rmconsole app
+*/
+
 function Feedback(div) {
   /**
    * Initializes a Feedback Class that can be used to send messages to the user.
