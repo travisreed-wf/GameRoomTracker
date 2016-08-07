@@ -7,6 +7,7 @@
   {{ super() }}
 {% endblock %}
 {% block body %}
+  <div id="home-page-feedback"></div>
   <div class="row">
     <div class="col-md-12 col-sm-12">
       <h3>Game Room Tracker</h3>
@@ -19,6 +20,7 @@
   {{ super() }}
   <script src="/static/select2-4.0.3/select2.min.js"></script>
   <script type='application/javascript'>
+    {% include '/js_helpers/feedback.js' %}
     {% include '/js/player.js' %}
     {% include '/js/game.js' %}
     {% include '/js/home.js' %}
