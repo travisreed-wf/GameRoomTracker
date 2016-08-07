@@ -67,7 +67,11 @@ Game.prototype = {
     this.playerIndex = pageNum - 1;
     var player = this.players[this.playerIndex];
 
-    var playerHTML = player.getHTML();
+    var buttonText;
+    if (this.playerIndex === this.players.length - 1) {
+      buttonText = "Submit";
+    }
+    var playerHTML = player.getHTML(buttonText);
     this.div.html(playerHTML);
 
     var paginationHTML = this.getPaginationHTML();

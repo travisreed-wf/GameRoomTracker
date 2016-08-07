@@ -11,7 +11,10 @@ function Player(playerName) {
 Player.prototype = {
   constructor: Player,
 
-  getHTML: function() {
+  getHTML: function(buttonText) {
+    if (!buttonText) {
+      buttonText = "Next";
+    }
     var dict = this.toHTMLDict();
     var html =
       '<h4>' + this.name + '</h4>'+
@@ -36,7 +39,7 @@ Player.prototype = {
           '<label>Lag rank</label>' +
           '<input id="lag-rank" class="form-control" type="number"' + dict.lag_rank + '>' +
         '</div>' +
-        '<div><button id="player-submit" class="btn btn-primary">Submit</button></div>' +
+        '<div><button id="player-submit" class="btn btn-primary">' + buttonText +'</button></div>' +
       '</div>';
     return html;
   },
