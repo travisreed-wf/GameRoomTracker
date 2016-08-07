@@ -1,9 +1,9 @@
 from flask import Flask
 from flask_debugtoolbar import DebugToolbarExtension
 
-from src.game import api as game_api
+from src.api import game as game_api
+from src.api import user as user_api
 from src.home import views as home_views
-from src.user import api as user_api
 
 
 app = Flask(__name__)

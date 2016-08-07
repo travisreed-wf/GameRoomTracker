@@ -34,7 +34,7 @@ Player.prototype = {
     return html;
   },
 
-  getInputData: function() {
+  parseInputs: function() {
     return {
       balls_hit_in: this.parseNumber($('#num-hit-in').val()),
       balls_remaining: this.parseNumber($('#num-left').val()),
@@ -45,7 +45,7 @@ Player.prototype = {
   },
 
   buildRequestData: function() {
-    var inputData = this.getInputData();
+    var inputData = this.parseInputs();
     if (this.isValidData(inputData)) {
       inputData.name = this.name;
       return inputData;
