@@ -75,5 +75,4 @@ class Game(polymodel.PolyModel):
                 to_put.append(player)
 
                 record_index += 1
-
         ndb.put_multi(to_put)
