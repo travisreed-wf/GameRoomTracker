@@ -45,7 +45,7 @@ class Game(polymodel.PolyModel):
         game.calculate_rating_change()
         game.players = [s.player for s in player_records]
         game.put()
-        return game  #  TODO: Calculate winner
+        return game
 
     def calculate_rating_change(self):
         """
