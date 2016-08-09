@@ -1,7 +1,13 @@
 import flask
 from google.appengine.api import users
 from google.appengine.ext import ndb
+import trueskill
 
+from src.config import DEFAULT_RANK_ELASTICITY, DEFAULT_RANK_POINTS
+
+class Rating(ndb.Model):
+    elasticity = ndb.FloatProperty(default=DEFAULT_RANK_ELASTICITY)
+    points = ndb.FloatProperty(default=DEFAULT_RANK_POINTS)
 
 class User(ndb.Model):
     """
@@ -11,33 +17,40 @@ class User(ndb.Model):
     email = ndb.StringProperty(required=True)
     experience = ndb.IntegerProperty(default=0)
     name = ndb.StringProperty(required=True)
-    total_points = ndb.ComputedProperty(
-        lambda self: self._compute_total_points())
+    rating = ndb.StructuredProperty(Rating)
 
     @property
     def is_admin(self):
         return User.current_user_is_admin()
 
     @property
-    def games_played(self):
+    def games_played_count(self):
         # Query game.players
         return 0
 
     @property
-    def games_won(self):
+    def games_won_count(self):
         # Query Game.winners
-        return None
+        return 0
 
     @property
     def level(self):
         return 1
 
     @property
+    def trueskill_rating(self):
+        if not self.rating:
+            self.rating = Rating()
+            self.put()
+        return trueskill.Rating(
+            mu=self.rating.points, sigma=self.rating.elasticity)
+
+    @property
     def win_percentage(self):
         # self.games_won / self.games_played
-        games_played = self.games_played
-        if games_played:
-            return self.games_won / self.games_played
+        games_played_count = self.games_played_count
+        if games_played_count:
+            return self.games_won_count / games_played_count
         else:
             return 0
 
@@ -90,6 +103,6 @@ class User(ndb.Model):
         }
         flask.session['user'] = user_data
 
-    def _compute_total_points(self):
-        # TODO
-        pass
+    def update_rating(self, trueskill_rating):
+        self.rating.points = trueskill_rating.mu
+        self.rating.elasticity = trueskill_rating.sigma
