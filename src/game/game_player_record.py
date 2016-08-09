@@ -7,7 +7,14 @@ class GamePlayerRecord(polymodel.PolyModel):
     player_key = ndb.KeyProperty(kind="User", required=True)
     player_placement = ndb.IntegerProperty(required=True,
                                            choices=[1, 2, 3, 4, 5])
-    rank_points_earned = ndb.IntegerProperty()
+    rank_points_earned = ndb.FloatProperty(default=0.0)
+
+    @property
+    def player(self):
+        if hasattr(self, "_player"):
+            return self._player
+        self._player = self.player_key.get()
+        return self._player
 
 
 class PoolPlayerRecord(GamePlayerRecord):

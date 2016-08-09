@@ -1,6 +1,6 @@
 feedback = null;
 game = null;
-USERNAMES = [];
+gUsernames = [];
 fetchUsernames();
 $(document).ready(function() {
   feedback = new Feedback($('#home-page-feedback'));
@@ -14,7 +14,7 @@ function fetchUsernames() {
     url: '/api/user/usernames/',
     method: 'GET',
     success: function(data) {
-      USERNAMES = JSON.parse(data);
+      gUsernames = JSON.parse(data);
       game.enableGameSelect();
     },
     error: function() {

@@ -130,8 +130,8 @@ Game.prototype = {
   },
   getUserNamesHTML: function() {
     var html = '';
-    for (var i = 0; i < USERNAMES.length; i++) {
-      var name = USERNAMES[i];
+    for (var i = 0; i < gUsernames.length; i++) {
+      var name = gUsernames[i];
       html += '<option>' + name +'</option>';
     }
     return html;

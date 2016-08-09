@@ -6,3 +6,4 @@ pep8==1.6.2
 pytz==2015.4
 requests==2.3.0
 setuptools==18.1
+trueskill==0.4.4
