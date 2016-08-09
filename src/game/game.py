@@ -5,10 +5,12 @@ from google.appengine.ext.ndb import polymodel
 class Game(polymodel.PolyModel):
     """Represents a single instance of a Game"""
     date = ndb.DateTimeProperty(auto_now_add=True, required=True)
-    player_keys = ndb.KeyProperty(kind="User", repeated=True)
+    player_keys = ndb.ComputedProperty(
+        lambda self: self._player_keys, repeated=True)
     player_record_keys = ndb.KeyProperty(
         kind="GamePlayerRecord", repeated=True)
-    winner_keys = ndb.KeyProperty(kind="User", repeated=True)
+    winner_keys = ndb.ComputedProperty(
+        lambda self: self._winner_keys, repeated=True)
 
     @property
     def player_records(self):
@@ -16,6 +18,20 @@ class Game(polymodel.PolyModel):
             return self._player_records
         self._player_records = ndb.get_multi(self.player_record_keys)
         return self._player_records
+
+    @property
+    def _player_keys(self):
+        """Dont use this, use ComputedProperty instead"""
+        return [r.player_key for r in ndb.get_multi(self.player_record_keys)]
+
+    @property
+    def _winner_keys(self):
+        """Dont use this, use ComputedProperty instead"""
+        winner_keys = []
+        for record in ndb.get_multi(self.player_record_keys):
+            if record.placement == 1:
+                winner_keys.append(record.player_key)
+        return winner_keys
 
     @classmethod
     def add(cls, player_records):
