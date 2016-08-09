@@ -1,5 +1,5 @@
 game = null;
-USERNAMES = [];
+gUsernames = [];
 fetchUsernames();
 $(document).ready(function() {
   game = new Game($('#game'));
@@ -12,7 +12,7 @@ function fetchUsernames() {
     url: '/api/user/usernames/',
     method: 'GET',
     success: function(data) {
-      USERNAMES = JSON.parse(data);
+      gUsernames = JSON.parse(data);
     },
     error: function() {
       // TODO feedback
