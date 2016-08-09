@@ -11,7 +11,7 @@ app.debug = True
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.secret_key = "SecretKey"
 
-toolbar = DebugToolbarExtension(app)
+# toolbar = DebugToolbarExtension(app)
 
 game_api.setup_urls(app)
 home_views.setup_urls(app)
