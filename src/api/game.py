@@ -18,7 +18,6 @@ class GameAPI(MethodView):
         if not game:
             return 'Invalid game_type', 400
 
-        print data['players']
         records = self._create_records(data['players'])
 
         game.add(records)
