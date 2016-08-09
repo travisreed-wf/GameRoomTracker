@@ -29,7 +29,7 @@ class Game(polymodel.PolyModel):
         """Dont use this, use ComputedProperty instead"""
         winner_keys = []
         for record in ndb.get_multi(self.player_record_keys):
-            if record.placement == 1:
+            if record.player_placement == 1:
                 winner_keys.append(record.player_key)
         return winner_keys
 
@@ -69,7 +69,7 @@ class Game(polymodel.PolyModel):
                 record = sorted_player_records[record_index]
                 player = record.player
 
-                points_earned = rating.mu - player.rank_data.points
+                points_earned = rating.mu - player.rating.points
                 record.rank_points_earned = points_earned
                 player.update_rating(rating)
                 to_put.append(player)
