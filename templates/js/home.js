@@ -6,7 +6,12 @@ $(document).ready(function() {
   feedback = new Feedback($('#home-page-feedback'));
   game = new Game($('#game'));
   game.createInitialView();
+
+  $('#leaderboard').DataTable({
+    "order": [[1, "desc" ]]
+  });
 });
+
 
 
 function fetchUsernames() {

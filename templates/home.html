@@ -3,6 +3,7 @@
   <head>
       <title>Game Room Tracker</title>
       <link href="/static/select2-4.0.3/select2.min.css" rel="stylesheet" />
+      <link rel="stylesheet" href="/static/DataTables-1.10.11/media/css/dataTables.bootstrap.min.css">
   </head>
   {{ super() }}
 {% endblock %}
@@ -14,11 +15,38 @@
     </div>
   </div>
   <hr />
-  <div id='game'></div>
+  <div class="row">
+    <div class="col-md-12 col-sm-12">
+      <table id='leaderboard' class="table table-condensed table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+            <tr>
+              <td>{{ user.name }}</td>
+              <td>{{ user.rating.points }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <hr />
+  <div class="row">
+    <div class="col-md-12 col-sm-12">
+        <div id='game'></div>
+    </div>
+  </div>
 {% endblock body %}
 {% block js_bottom %}
   {{ super() }}
   <script src="/static/select2-4.0.3/select2.min.js"></script>
+  <script src="/static/DataTables-1.10.11/media/js/jquery.dataTables.min.js"></script>
+  <script src="/static/DataTables-1.10.11/media/js/dataTables.bootstrap.min.js"></script>
   <script type='application/javascript'>
     {% include '/js_helpers/feedback.js' %}
     {% include '/js/player.js' %}
