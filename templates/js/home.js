@@ -1,7 +1,9 @@
+feedback = null;
 game = null;
 gUsernames = [];
 fetchUsernames();
 $(document).ready(function() {
+  feedback = new Feedback($('#home-page-feedback'));
   game = new Game($('#game'));
   game.createInitialView();
 });
@@ -13,10 +15,11 @@ function fetchUsernames() {
     method: 'GET',
     success: function(data) {
       gUsernames = JSON.parse(data);
+      game.enableGameSelect();
     },
     error: function() {
-      // TODO feedback
-      console.error('Bad request');
+      var m = 'Could not fetch players. Please reload page.';
+      feedback.alert(m, 'red');
     }
   });
 }
