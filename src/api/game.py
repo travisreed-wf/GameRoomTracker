@@ -36,11 +36,11 @@ class GameAPI(MethodView):
     @staticmethod
     def _create_records(players):
         records = []
-        for player in players:
-            name = player.pop('name')
+        for player_record_data in players:
+            name = player_record_data.pop('name')
             player_key = User.query(User.name == name).get(keys_only=True)
-            player['player_key'] = player_key
-            record = PoolPlayerRecord(**player)
+            player_record_data['player_key'] = player_key
+            record = PoolPlayerRecord(**player_record_data)
             records.append(record)
         ndb.put_multi(records)
         return records
