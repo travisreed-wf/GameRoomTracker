@@ -1,14 +1,11 @@
 from flask import render_template
 from flask.views import MethodView
 
-from src.user.user import User
-
 
 class HomeView(MethodView):
 
     def get(self):
-        users = User.query().fetch()
-        return render_template('home.html', users=users)
+        return render_template('home.html')
 
 
 def setup_urls(app):
