@@ -21,11 +21,15 @@ class PoolStats(ndb.Model):
 
     @property
     def average_balls_hit_in(self):
-        return float(self.games_played) / self.total_balls_hit_in
+        if self.games_played and self.total_balls_hit_in:
+            return float(self.total_balls_hit_in) / self.games_played
+        return 0.0
 
     @property
     def average_scratches(self):
-        return float(self.games_played) / self.total_scratches
+        if self.games_played and self.total_scratches:
+            return float(self.total_scratches) / self.games_played
+        return 0.0
 
 
 class User(ndb.Model):
@@ -172,5 +176,5 @@ class User(ndb.Model):
         self.pool_stats.games_played = total_wins + total_losses
         self.pool_stats.total_scratches = total_scratches
         self.pool_stats.total_balls_hit_in = total_balls_hit_in
-        self.pool_stats._weighted_win_percentage = mean(win_weights)
+        self.pool_stats.weighted_win_percentage = int(mean(win_weights) * 100)
         self.put()

@@ -12,7 +12,7 @@ app.debug = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.secret_key = "SecretKey"
 
-crons_api.setup_urls()
+crons_api.setup_urls(app)
 game_api.setup_urls(app)
 home_views.setup_urls(app)
 stats_views.setup_urls(app)

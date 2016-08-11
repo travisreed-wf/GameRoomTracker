@@ -21,13 +21,21 @@
           <tr>
             <th>Name</th>
             <th>Rating</th>
+            <th>Average Balls Hit In</th>
+            <th>Average Scratches</th>
+            <th>Average Lag Rank</th>
+            <th>Weighted Win Percentage</th>
           </tr>
         </thead>
         <tbody>
           {% for user in users %}
             <tr>
               <td>{{ user.name }}</td>
-              <td>{{ user.rating.points }}</td>
+              <td>{{ '%0.2f'| format(user.rating.points|float) }}</td>
+              <td>{{ '%0.2f'| format(user.pool_stats.average_balls_hit_in|float) }}</td>
+              <td>{{ '%0.2f'| format(user.pool_stats.average_scratches|float) }}</td>
+              <td>{{ '%0.2f'| format(user.pool_stats.average_lag_rank|float) }}</td>
+              <td>{{ user.pool_stats.weighted_win_percentage }}</td>
             </tr>
           {% endfor %}
         </tbody>
