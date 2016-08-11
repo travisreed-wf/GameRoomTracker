@@ -4,10 +4,29 @@ from google.appengine.ext import ndb
 import trueskill
 
 from src.config import DEFAULT_RANK_ELASTICITY, DEFAULT_RANK_POINTS
+from src.helpers import mean
 
 class Rating(ndb.Model):
     elasticity = ndb.FloatProperty(default=DEFAULT_RANK_ELASTICITY)
     points = ndb.FloatProperty(default=DEFAULT_RANK_POINTS)
+
+class PoolStats(ndb.Model):
+    average_lag_rank = ndb.FloatProperty()
+    games_lost = ndb.IntegerProperty()
+    games_played = ndb.IntegerProperty()
+    games_won = ndb.IntegerProperty()
+    total_balls_hit_in = ndb.IntegerProperty()
+    total_scratches = ndb.IntegerProperty()
+    weighted_win_percentage = ndb.FloatProperty()
+
+    @property
+    def average_balls_hit_in(self):
+        return float(self.games_played) / self.total_balls_hit_in
+
+    @property
+    def average_scratches(self):
+        return float(self.games_played) / self.total_scratches
+
 
 class User(ndb.Model):
     """
@@ -17,11 +36,17 @@ class User(ndb.Model):
     email = ndb.StringProperty(required=True)
     experience = ndb.IntegerProperty(default=0)
     name = ndb.StringProperty(required=True)
+    pool_stats = ndb.StructuredProperty(PoolStats)
     rating = ndb.StructuredProperty(Rating)
 
     @property
     def is_admin(self):
         return User.current_user_is_admin()
+
+    @property
+    def games_played(self):
+        from src.game.game import Game
+        return Game.query(Game.player_record_keys==self.key).fetch()
 
     @property
     def games_played_count(self):
@@ -36,6 +61,11 @@ class User(ndb.Model):
     @property
     def level(self):
         return 1
+
+    @property
+    def pool_games_played(self):
+        from src.game.pool_game import PoolGame
+        return PoolGame.query(PoolGame.player_keys == self.key).fetch()
 
     @property
     def trueskill_rating(self):
@@ -106,3 +136,41 @@ class User(ndb.Model):
     def update_rating(self, trueskill_rating):
         self.rating.points = trueskill_rating.mu
         self.rating.elasticity = trueskill_rating.sigma
+
+    def update_pool_stats(self):
+        total_losses = 0
+        total_wins = 0
+        total_scratches = 0
+        total_balls_hit_in = 0
+        lag_ranks = []
+        win_weights = []
+        games = self.pool_games_played
+        for game in games:
+            record = game.get_player_record(self)
+
+            if record.lag_rank:
+                lag_ranks.append(record.lag_rank)
+
+            win_weights.append(record.win_weight)
+            if record.player_placement == 1:
+                total_wins += 1
+            else:
+                total_losses += 1
+
+            if record.scratch_count:
+                total_scratches += record.scratch_count
+
+            if record.balls_hit_in:
+                total_balls_hit_in += record.balls_hit_in
+
+        if not self.pool_stats:
+            self.pool_stats = PoolStats()
+
+        self.pool_stats.average_lag_rank = mean(lag_ranks)
+        self.pool_stats.games_lost = total_losses
+        self.pool_stats.games_won = total_wins
+        self.pool_stats.games_played = total_wins + total_losses
+        self.pool_stats.total_scratches = total_scratches
+        self.pool_stats.total_balls_hit_in = total_balls_hit_in
+        self.pool_stats._weighted_win_percentage = mean(win_weights)
+        self.put()

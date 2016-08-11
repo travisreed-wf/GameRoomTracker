@@ -1,0 +1,5 @@
+cron:
+- description: Update stats for each player
+  url: /api/crons/metrics/
+  schedule: every day 21:50
+  timezone: America/Chicago

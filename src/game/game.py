@@ -60,6 +60,11 @@ class Game(polymodel.PolyModel):
         """
         pass
 
+    def get_player_record(self, player):
+        for record in self.player_records:
+            if record.player_key == player.key:
+                return record
+
     @staticmethod
     def _update_ranked_data(records, rated_rating_groups):
         to_put = []

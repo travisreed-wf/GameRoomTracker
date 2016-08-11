@@ -1,5 +1,6 @@
 from flask import Flask
 
+from src.api import crons as crons_api
 from src.api import game as game_api
 from src.api import user as user_api
 from src.home import views as home_views
@@ -11,6 +12,7 @@ app.debug = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.secret_key = "SecretKey"
 
+crons_api.setup_urls()
 game_api.setup_urls(app)
 home_views.setup_urls(app)
 stats_views.setup_urls(app)
