@@ -61,18 +61,15 @@ class Game(polymodel.PolyModel):
         pass
 
     @staticmethod
-    def _update_ranked_data(sorted_player_records, rated_rating_groups):
-        to_put = sorted_player_records
-        record_index = 0
+    def _update_ranked_data(records, rated_rating_groups):
+        to_put = []
         for team in rated_rating_groups:
-            for rating in team.itervalues():
-                record = sorted_player_records[record_index]
+            for name, rating in team.iteritems():
+                record = [r for r in records if r.player.name == name][0]
                 player = record.player
-
                 points_earned = rating.mu - player.rating.points
                 record.rank_points_earned = points_earned
                 player.update_rating(rating)
-                to_put.append(player)
+                to_put += [player, record]
 
-                record_index += 1
         ndb.put_multi(to_put)

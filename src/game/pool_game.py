@@ -47,7 +47,6 @@ class EightBallGame(PoolGame):
             for record in team_records:
                 team[record.player.name] = record.player.trueskill_rating
             teams.append(team)
-
         ranks = [0, 1]
 
         env = TrueSkill(
